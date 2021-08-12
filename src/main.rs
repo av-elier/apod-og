@@ -50,7 +50,7 @@ async fn get_apog_url() -> String {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| App::new().service(apog))
-        .bind("127.0.0.1:8080")?
+        .bind(format!("0.0.0.0:{}", std::env::var("PORT").unwrap_or("8080".to_string())))?
         .run()
         .await
 }
