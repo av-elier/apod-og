@@ -16,6 +16,14 @@ async fn apog() -> Result<HttpResponse> {
         .body(body))
 }
 
+#[get("/304")]
+async fn redirect() -> Result<HttpResponse> {
+    let apog_url = get_apog_url().await;
+    Ok(HttpResponse::build(StatusCode::TEMPORARY_REDIRECT)
+        .set_header("Location", apog_url)
+        .body(""))
+}
+
 #[cached(time=3600)]
 async fn get_apog_url() -> String {
     println!("calling get_apog_url");
@@ -49,7 +57,7 @@ async fn get_apog_url() -> String {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| App::new().service(apog))
+    HttpServer::new(|| App::new().service(apog).service(redirect))
         .bind(format!("0.0.0.0:{}", std::env::var("PORT").unwrap_or("8080".to_string())))?
         .run()
         .await
