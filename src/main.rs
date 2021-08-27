@@ -8,9 +8,14 @@ use scraper::{Html, Selector};
 async fn apog() -> Result<HttpResponse> {
     let apog_url = get_apog_url().await;
     let body = format!(r#"<html><head>
-<title>apog with og</title>
-<meta property="og:image" content="{}" />
-</head></html>"#, apog_url);
+<meta property="og:image" content="{0}" />
+</head><body>
+<style>
+body {{
+  background-image: url('{0}');
+}}
+</style>
+</body></html>"#, apog_url);
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
         .body(body))
