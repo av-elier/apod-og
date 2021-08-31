@@ -21,7 +21,7 @@ body {{
         .body(body))
 }
 
-#[get("/304")]
+#[get("/307")]
 async fn redirect() -> Result<HttpResponse> {
     let apog_url = get_apog_url().await;
     Ok(HttpResponse::build(StatusCode::TEMPORARY_REDIRECT)
