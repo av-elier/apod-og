@@ -1,13 +1,14 @@
-use actix_web::{get, App, HttpServer, HttpResponse, Result};
-use actix_web::http::{StatusCode};
 use actix_web::client::Client;
+use actix_web::http::StatusCode;
+use actix_web::{get, App, HttpResponse, HttpServer, Result};
 use cached::proc_macro::cached;
 use scraper::{Html, Selector};
 
 #[get("/")]
 async fn apog() -> Result<HttpResponse> {
     let apog_url = get_apog_url().await;
-    let body = format!(r#"<html><head>
+    let body = format!(
+        r#"<html><head>
 <meta property="og:image" content="{0}" />
 </head><body>
 <style>
@@ -15,7 +16,9 @@ body {{
   background-image: url('{0}');
 }}
 </style>
-</body></html>"#, apog_url);
+</body></html>"#,
+        apog_url
+    );
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
         .body(body))
@@ -29,7 +32,7 @@ async fn redirect() -> Result<HttpResponse> {
         .body(""))
 }
 
-#[cached(time=3600)]
+#[cached(time = 3600)]
 async fn get_apog_url() -> String {
     println!("calling get_apog_url");
 
@@ -47,8 +50,7 @@ async fn get_apog_url() -> String {
 
     let document = Html::parse_document(std::str::from_utf8(&html).unwrap());
     let img_tag = document
-        .select(&Selector::parse("a>img")
-        .unwrap())
+        .select(&Selector::parse("a>img").unwrap())
         .next()
         .unwrap()
         .value()
@@ -63,7 +65,10 @@ async fn get_apog_url() -> String {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| App::new().service(apog).service(redirect))
-        .bind(format!("0.0.0.0:{}", std::env::var("PORT").unwrap_or("8080".to_string())))?
+        .bind(format!(
+            "0.0.0.0:{}",
+            std::env::var("PORT").unwrap_or("8080".to_string())
+        ))?
         .run()
         .await
 }
