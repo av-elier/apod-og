@@ -2,7 +2,9 @@ use actix_web::client::Client;
 use actix_web::http::StatusCode;
 use actix_web::{get, App, HttpResponse, HttpServer, Result};
 use cached::proc_macro::cached;
-use scraper::{Html, Selector};
+
+mod parser;
+use parser::get_full_url;
 
 #[get("/")]
 async fn apog() -> Result<HttpResponse> {
@@ -48,16 +50,7 @@ async fn get_apog_url() -> String {
         .await
         .unwrap();
 
-    let document = Html::parse_document(std::str::from_utf8(&html).unwrap());
-    let img_tag = document
-        .select(&Selector::parse("a>img").unwrap())
-        .next()
-        .unwrap()
-        .value()
-        .attr("src")
-        .unwrap();
-
-    let full_url = format!("https://apod.nasa.gov/apod/{}", img_tag);
+    let full_url = get_full_url(html);
     println!("got full_url {:?}", full_url);
     String::from(full_url)
 }

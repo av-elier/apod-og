@@ -291,6 +291,7 @@ dependencies = [
  "actix-web",
  "cached",
  "openssl",
+ "regex",
  "scraper",
 ]
 
