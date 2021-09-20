@@ -10,3 +10,4 @@ actix-web = { version = "3", features = ["openssl"] }
 scraper = "0.12"
 cached = "0.24"
 openssl = "0.10.28"
+regex = "1.5.4"
