@@ -1,1 +1,1 @@
-web: ./target/release/apog-og
+web: ./target/release/apod-og

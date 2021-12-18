@@ -42,7 +42,7 @@ async fn get_apog_url() -> String {
 
     let html: actix_web::web::Bytes = client
         .get("https://apod.nasa.gov/apod/")
-        .header("User-Agent", "Actix-web apog-og")
+        .header("User-Agent", "Actix-web apod-og")
         .send()
         .await
         .unwrap()

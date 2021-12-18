@@ -285,7 +285,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "apog-og"
+name = "apod-og"
 version = "0.1.0"
 dependencies = [
  "actix-web",
