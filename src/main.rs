@@ -72,7 +72,7 @@ async fn get_cat_pod_url() -> String {
     println!("calling get_cat_pod_url");
 
     let gifday = chrono::Local::now().weekday() == chrono::Weekday::Mon;
-    let mime = if !gifday { "gif" } else { "jpg" };
+    let mime = if gifday { "gif" } else { "jpg" };
 
     let api_key = std::env::var("CAT_API_KEY").unwrap_or("DEMO-API-KEY".to_string());
     let client = Client::new();
