@@ -52,7 +52,18 @@ fn extract_video_id(link: &String) -> Option<String> {
 }
 
 pub fn get_full_url(bytes: actix_web::web::Bytes) -> String {
-    let document = Html::parse_document(&String::from_utf8_lossy(&bytes));
+    let html_string = match std::str::from_utf8(&bytes) {
+        Ok(s) => s.to_string(),
+        Err(_) => {
+            // NASA sometimes serves UTF-16LE payload without correctly identifying it in Content-Type
+            let u16_data: Vec<u16> = bytes
+                .chunks_exact(2)
+                .map(|c| u16::from_le_bytes([c[0], c[1]]))
+                .collect();
+            String::from_utf16_lossy(&u16_data)
+        }
+    };
+    let document = Html::parse_document(&html_string);
     let not_found_url = "https://img.youtube.com/vi/7w8HlfC5Mb8/0.jpg".to_owned();
 
     return match extract_content_link(document) {
@@ -109,6 +120,7 @@ mod tests {
     #[test]
     fn test_get_full_url_ap260312() {
         // Just reading the contents should panic if from_utf8 isn't replaced with from_utf8_lossy
-        let _url_actual = get_full_url(get_test_contents("test-ap260312.htm"));
+        let url_actual = get_full_url(get_test_contents("test-ap260312.htm"));
+        assert_eq!("https://img.youtube.com/vi/3jsn1829OPw/0.jpg", url_actual);
     }
 }
