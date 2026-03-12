@@ -52,7 +52,7 @@ fn extract_video_id(link: &String) -> Option<String> {
 }
 
 pub fn get_full_url(bytes: actix_web::web::Bytes) -> String {
-    let document = Html::parse_document(std::str::from_utf8(&bytes).unwrap());
+    let document = Html::parse_document(&String::from_utf8_lossy(&bytes));
     let not_found_url = "https://img.youtube.com/vi/7w8HlfC5Mb8/0.jpg".to_owned();
 
     return match extract_content_link(document) {
@@ -78,9 +78,7 @@ mod tests {
 
     fn get_test_contents(file_name: &str) -> Bytes {
         Bytes::copy_from_slice(
-            fs::read_to_string(format!("test-data/{}", file_name))
-                .unwrap()
-                .as_bytes(),
+            &fs::read(format!("test-data/{}", file_name)).unwrap(),
         )
     }
 
@@ -107,5 +105,10 @@ mod tests {
         let url_actual = get_full_url(get_test_contents("test-404.htm"));
 
         assert_eq!(url_expected, url_actual);
+    }
+    #[test]
+    fn test_get_full_url_ap260312() {
+        // Just reading the contents should panic if from_utf8 isn't replaced with from_utf8_lossy
+        let _url_actual = get_full_url(get_test_contents("test-ap260312.htm"));
     }
 }
