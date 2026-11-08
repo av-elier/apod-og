@@ -64,10 +64,14 @@ pub fn get_full_url(bytes: actix_web::web::Bytes) -> String {
         }
     };
     let document = Html::parse_document(&html_string);
-    let not_found_url = "https://img.youtube.com/vi/7w8HlfC5Mb8/0.jpg".to_owned();
+    let not_found_url = std::env::var("FALLBACK_IMAGE_URL")
+        .unwrap_or_else(|_| "https://img.youtube.com/vi/7w8HlfC5Mb8/0.jpg".to_owned());
 
     return match extract_content_link(document) {
-        ContentLink::NotFound => not_found_url,
+        ContentLink::NotFound => {
+            println!("no content link found, using fallback url {}", not_found_url);
+            not_found_url
+        }
         ContentLink::Image(link) => {
             format!("https://apod.nasa.gov/apod/{}", link)
         }
